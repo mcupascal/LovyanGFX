@@ -24,6 +24,11 @@ Contributors:
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+// Included here rather than left to luck: DataWrapperT<FILE> below exists only if a FILE marker
+// is defined, and with newlib <string.h> happened to bring one in. picolibc's does not.
+#if __has_include(<stdio.h>)
+ #include <stdio.h>
+#endif
 #include "../../utility/pgmspace.h"
 
 namespace lgfx
@@ -100,7 +105,8 @@ namespace lgfx
 
 //----------------------------------------------------------------------------
 
-#if defined (__FILE_defined) || defined (_FILE_DEFINED) || defined (_FSTDIO)
+// picolibc (ESP-IDF 6's default C library) declares FILE with _FILE_DECLARED and none of the others.
+#if defined (__FILE_defined) || defined (_FILE_DEFINED) || defined (_FSTDIO) || defined (_FILE_DECLARED)
   template <>
   struct DataWrapperT<FILE> : public DataWrapper
   {
